@@ -23,6 +23,7 @@ export default function Login() {
       const [isSuccess, data] = await login({ email, password });
 
       if (isSuccess) {
+        localStorage.setItem("user", email);
         router.push("/");
       } else {
         setErrorMessage(data.error);

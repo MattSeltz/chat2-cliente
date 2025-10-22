@@ -11,7 +11,12 @@ export default function Home() {
       withCredentials: true,
     });
 
-    socketInstance.on("usersList", (res) => setUsersList(res));
+    socketInstance.on("usersList", (res) => {
+      const filterUsersList = res.filter(
+        ({ user }) => user !== localStorage.getItem("user")
+      );
+      setUsersList(filterUsersList);
+    });
 
     return () => {
       socketInstance.off("usersList");
@@ -22,18 +27,22 @@ export default function Home() {
   return (
     <main className="h-screen flex flex-col justify-center items-center gap-8">
       <p className="text-3xl">
-        Usuarios conectados: <strong>{usersList.length}</strong>
+        Connected users: <strong>{usersList.length}</strong>
       </p>
 
       <ul>
-        {usersList.map(({ user }) => (
-          <li
-            key={user}
-            className="text-xl transition-shadow hover:shadow shadow-white cursor-pointer rounded px-4 py-2"
-          >
-            {user}
-          </li>
-        ))}
+        {usersList.length ? (
+          usersList.map(({ user }) => (
+            <li
+              key={user}
+              className="text-xl transition-shadow hover:shadow shadow-white cursor-pointer rounded px-4 py-2"
+            >
+              {user}
+            </li>
+          ))
+        ) : (
+          <p>No user has logged in yet</p>
+        )}
       </ul>
     </main>
   );
