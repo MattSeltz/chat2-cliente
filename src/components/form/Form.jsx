@@ -41,7 +41,7 @@ export const Form = ({
         type="submit"
         className="bg-white text-black font-bold rounded px-4 py-2 cursor-pointer transition-opacity hover:opacity-50"
       >
-        {isLogin ? "Login" : "Register"}
+        {isLogin ? "Sign In" : "Sign Up"}
       </button>
 
       <Link
