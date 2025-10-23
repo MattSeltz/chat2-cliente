@@ -1,7 +1,7 @@
 "use client";
 
 import { io } from "socket.io-client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 import { logout } from "@/services/services";
@@ -14,6 +14,11 @@ export default function Home() {
   const [user, setUser] = useState(null);
   const [isShowModal, setIsShowModal] = useState(false);
   const [userToChat, setUserToChat] = useState(null);
+  const [message, setMessage] = useState("");
+  const [socket, setSocket] = useState(null);
+  const [messagesList, setMessagesList] = useState([]);
+
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     const u = localStorage.getItem("user");
@@ -23,6 +28,8 @@ export default function Home() {
       withCredentials: true,
     });
 
+    setSocket(socketInstance);
+
     socketInstance.on("usersList", (res) => {
       const filterUsersList = res.filter(
         ({ user }) => user !== localStorage.getItem("user")
@@ -30,11 +37,21 @@ export default function Home() {
       setUsersList(filterUsersList);
     });
 
+    socketInstance.on("message", (data) =>
+      setMessagesList((prev) => [...prev, data])
+    );
+
     return () => {
       socketInstance.off("usersList");
+      socketInstance.off("message");
       socketInstance.disconnect();
     };
   }, []);
+
+  // Scroll automático cuando cambia la lista de mensajes
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messagesList]);
 
   const handleClickSignOut = async () => {
     try {
@@ -52,8 +69,16 @@ export default function Home() {
   };
 
   const handleClickSelectUserToChat = (user) => {
+    socket?.emit("join", user);
     setUserToChat(user);
     setIsShowModal(false);
+  };
+
+  const handleMessage = (e) => {
+    if (e.key === "Enter" && message) {
+      socket?.emit("message", { to: userToChat, from: user, message });
+      setMessage("");
+    }
   };
 
   return (
@@ -169,27 +194,27 @@ export default function Home() {
           <p>{userToChat}</p>
         </header>
 
-        <ul className="flex flex-col gap-8 overflow-auto py-4">
-          <li className="bg-white text-black font-bold rounded px-4 py-2 self-start">
-            Hola
-          </li>
-          <li className="bg-white text-black font-bold rounded px-4 py-2 self-end">
-            Hola
-          </li>
-          <li className="bg-white text-black font-bold rounded px-4 py-2 self-start">
-            ¿Cómo estas?
-          </li>
-          <li className="bg-white text-black font-bold rounded px-4 py-2 self-end">
-            Bien, ¿Y vos?
-          </li>
-          <li className="bg-white text-black font-bold rounded px-4 py-2 self-start">
-            Bien
-          </li>
+        <ul className="flex flex-col gap-8 overflow-auto py-4 h-full">
+          <div className="flex-grow" />
+          {messagesList.map((message, index) => (
+            <li
+              key={index}
+              className={`bg-white text-black font-bold rounded px-4 py-2 ${
+                message.from === user ? "self-end" : "self-start"
+              }`}
+            >
+              {message.message}
+            </li>
+          ))}
+          <div ref={messagesEndRef} />
         </ul>
         <input
           type="text"
           placeholder="Message..."
           className="shadow shadow-white rounded px-4 py-2 w-full"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleMessage}
         />
       </section>
 
