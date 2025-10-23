@@ -10,20 +10,21 @@ import { login } from "@/services/services";
 export default function Login() {
   const router = useRouter();
 
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!email || !password) return setErrorMessage("All fields are required");
+    if (!username || !password)
+      return setErrorMessage("All fields are required");
 
     try {
-      const [isSuccess, data] = await login({ email, password });
+      const [isSuccess, data] = await login({ username, password });
 
       if (isSuccess) {
-        localStorage.setItem("user", email);
+        localStorage.setItem("user", username);
         router.push("/");
       } else {
         setErrorMessage(data.error);
@@ -37,10 +38,10 @@ export default function Login() {
   return (
     <Form
       isLogin={true}
-      username={""}
-      setUsername={""}
-      email={email}
-      setEmail={setEmail}
+      username={username}
+      setUsername={setUsername}
+      email={""}
+      setEmail={""}
       password={password}
       setPassword={setPassword}
       handleSubmit={handleSubmit}

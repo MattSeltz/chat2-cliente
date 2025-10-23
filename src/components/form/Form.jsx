@@ -19,15 +19,20 @@ export const Form = ({
       className="h-screen flex flex-col justify-center items-center gap-4 relative"
       onSubmit={handleSubmit}
     >
+      <Input
+        text={"Username"}
+        type={"text"}
+        value={username}
+        setValue={setUsername}
+      />
       {!isLogin && (
         <Input
-          text={"Username"}
-          type={"text"}
-          value={username}
-          setValue={setUsername}
+          text={"Email"}
+          type={"email"}
+          value={email}
+          setValue={setEmail}
         />
       )}
-      <Input text={"Email"} type={"email"} value={email} setValue={setEmail} />
       <Input
         text={"Password"}
         type={"password"}
