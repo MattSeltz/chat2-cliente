@@ -12,6 +12,7 @@ export default function Home() {
   const [usersList, setUsersList] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [user, setUser] = useState(null);
+  const [isShowModal, setIsShowModal] = useState(false);
 
   useEffect(() => {
     const u = localStorage.getItem("user");
@@ -51,29 +52,91 @@ export default function Home() {
 
   return (
     <main className="h-screen flex gap-8 p-8 relative">
-      {/* <p className="text-3xl">
-        Connected users: <strong>{usersList.length}</strong>
-      </p>
+      {isShowModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Overlay */}
+          <div
+            className="fixed inset-0 bg-black bg-opacity-70"
+            onClick={() => {
+              /* cerrar modal */
+            }}
+          ></div>
 
-      <ul>
-        {usersList.length ? (
-          usersList.map(({ user }) => (
-            <li
-              key={user}
-              className="text-xl transition-shadow hover:shadow shadow-white cursor-pointer rounded px-4 py-2"
+          {/* Modal */}
+          <div className="relative bg-black shadow shadow-white rounded max-w-md w-full mx-4 p-6 z-10">
+            {/* Botón cerrar */}
+            <button
+              className="absolute top-4 right-4 text-white transition-opacity hover:opacity-50"
+              onClick={() => {
+                /* cerrar modal */
+                setIsShowModal(false);
+              }}
             >
-              {user}
-            </li>
-          ))
-        ) : (
-          <p>No user has logged in yet</p>
-        )}
-      </ul> */}
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
+            {/* Contenido */}
+            <h2 className="text-2xl font-bold text-white mb-4">
+              Connected users: <strong>{usersList.length}</strong>
+            </h2>
+
+            <ul className="text-white mb-6 p-4">
+              {usersList.length ? (
+                usersList.map(({ user }) => (
+                  <li
+                    key={user}
+                    className="text-xl transition-shadow hover:shadow shadow-white cursor-pointer rounded px-4 py-2"
+                  >
+                    {user}
+                  </li>
+                ))
+              ) : (
+                <p>No user has logged in yet</p>
+              )}
+            </ul>
+
+            {/* Botones de acción */}
+            <div className="flex gap-3 justify-end">
+              <button
+                className="shadow shadow-white rounded px-4 py-2 transition-opacity hover:opacity-50"
+                onClick={() => {
+                  /* cerrar modal */
+                  setIsShowModal(false);
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                className="bg-white text-black font-bold rounded px-4 py-2 transition-opacity hover:opacity-50"
+                onClick={() => {
+                  /* acción principal */
+                  setIsShowModal(false);
+                }}
+              >
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <section className="shadow shadow-white rounded h-[95%] w-1/4 p-4 flex flex-col items-center gap-8">
         <button
           type="button"
           className="bg-white text-black font-bold rounded px-4 py-2 cursor-pointer transition-opacity hover:opacity-50 mt-8"
+          onClick={() => setIsShowModal(true)}
         >
           New chat
         </button>
