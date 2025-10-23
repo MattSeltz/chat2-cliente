@@ -13,6 +13,7 @@ export default function Home() {
   const [errorMessage, setErrorMessage] = useState("");
   const [user, setUser] = useState(null);
   const [isShowModal, setIsShowModal] = useState(false);
+  const [userToChat, setUserToChat] = useState(null);
 
   useEffect(() => {
     const u = localStorage.getItem("user");
@@ -48,6 +49,11 @@ export default function Home() {
       console.error(error.message);
       setErrorMessage(error.message);
     }
+  };
+
+  const handleClickSelectUserToChat = (user) => {
+    setUserToChat(user);
+    setIsShowModal(false);
   };
 
   return (
@@ -98,6 +104,7 @@ export default function Home() {
                   <li
                     key={user}
                     className="text-xl transition-shadow hover:shadow shadow-white cursor-pointer rounded px-4 py-2"
+                    onClick={() => handleClickSelectUserToChat(user)}
                   >
                     {user}
                   </li>
@@ -153,9 +160,13 @@ export default function Home() {
 
       <section className="shadow shadow-white rounded h-[95%] w-3/4 p-4 flex flex-col justify-between">
         <header className="flex justify-between shadow shadow-white rounded p-4">
-          <p>Online</p>
+          <p>
+            {usersList.find(({ user }) => user === userToChat)
+              ? "Online"
+              : "Offline"}
+          </p>
 
-          <p>Marcus</p>
+          <p>{userToChat}</p>
         </header>
 
         <ul className="flex flex-col gap-8 overflow-auto py-4">
