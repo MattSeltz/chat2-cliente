@@ -37,9 +37,14 @@ export default function Home() {
       setUsersList(filterUsersList);
     });
 
-    socketInstance.on("message", (data) =>
-      setMessagesList((prev) => [...prev, data])
-    );
+    socketInstance.on("message", (data) => {
+      if (!userToChat) {
+        setUserToChat(data.from);
+        socket?.emit("join", data.from);
+      }
+
+      setMessagesList((prev) => [...prev, data]);
+    });
 
     return () => {
       socketInstance.off("usersList");
